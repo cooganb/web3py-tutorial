@@ -41,7 +41,7 @@ Blockchain systems are decentralized networks made up of people running individu
 
 Since this is a basic tutorial, we’ll use a service. The most popular one is [Infura.](https://infura.io/) You can setup your own account ([instructions here](https://blog.infura.io/getting-started-with-infura-28e41844cc89/)) or you can use the Product ID below. It’s crucial you get a Project ID and API endpoint -- it will be our API endpoint to the blockchain. 
 
-
+![Infura Project Dashboard](https://github.com/cooganb/web3py-tutorial/blob/master/infura-rinkeby.png)
 
 Copy the Endpoint and *be sure to append https:// to the address.*
 
