@@ -61,7 +61,6 @@ Python 3.8.2
 [Clang 6.0 (clang-600.0.57)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 >>> 
-
 ```
 
 To check that all our setup is correct, please run your python interpreter and the following commands:
@@ -73,11 +72,18 @@ To check that all our setup is correct, please run your python interpreter and t
 
 The above command imports some of the main methods from `web3.py` we’re going to use to connect to the blockchain as well as the ever-faithful, native `json` library.
 
+We also need to add in some middleware to help us work with Infura and the Rinkeby testnet:
+
+```python
+>>> from web3.middleware import geth_poa_middleware
+>>> w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+```
+
+Next, we'll create an object, `w3`, which we initialize with our Infura API endpoint ( appended with https:// ). It will become the main way `web3.py` works with the blockchain throughout the rest of the tutorial.
+
 ```python
 >>> w3 = Web3(Web3.HTTPProvider("https://rinkeby.infura.io/v3/8e4cd4b220fa42d3ac2acca966fd07fa"))
 ```
-
-This command creates an object called `w3`, which we initialize with our Infura API endpoint ( appended with https:// )
 
 _Note: You need to add **HTTPS://** in front of your Infura API address, otherwise you’ll get an error!_
 
@@ -106,6 +112,10 @@ _Note: In the next few steps, I’m going to break a few rules of cryptography a
 
 ```python
 >>> my_account = w3.eth.account.create(‘Nobody expects the Spanish Inquisition!’)
+>>> my_account._address
+'0x5b580eB23Fca4f0936127335a92f722905286738'
+>>> my_account._private_key
+HexBytes('0x265434629c3d2e652550d62225adcb2813d3ac32c6e07c8c39b5cc1efbca18b3')
 ```
 
 The above command uses the string input to generate the `my_account` object, which contains a private key (`my_account._private_key`) and its associated Ethereum address (`my_account._address`) . However, since this has been posted publicly, someone could generate and use the same private key. (Luckily, I’m just using it for this tutorial and only on a test blockchain network.) 
@@ -116,12 +126,12 @@ For this reason, users typically delegate private key creation and management to
 
 Ethereum address’ are long hexadecimal numbers. They’re nearly impossible to type or remember, so the Ethereum community created the [Ethereum Name System (ENS).](https://ens.domains/) It serves the same benefit of the Domain Name System, which replaces website server numbers ([216.58.194.46](http://216.58.194.46)) to human-readable names ([google.com](https://www.google.com)). Rather than a `.com` domain, most ENS names use a `.eth` domain.
 
-For example, I have an Ethererum account at `0x4d3dd8471a289E820Aa9E2Dc5f437C1b2E22F598` but I’ve used ENS to map the more readable name `coogan.eth` to the address. If you type those into apps or projects that support ENS (such as `web3.py`!), it will substitute in the Ethereum hexadecimal address. I’ll show how this works in the next section. Pretty nifty!
+For example, I have an Ethererum account at `0x4d3dd8471a289E820Aa9E2Dc5f437C1b2E22F598` but I’ve used ENS to map the more readable name `coogan.eth` to the address. If you type those into apps or projects that support ENS (such as `web3.py`!), it will substitute in the Ethereum hexadecimal address. Unfortunately, we won't be able to use it for this tutorial (`.eth` domain names only work on mainnet) but maybe in the next tutorial.
 
 
 ### Send Money
 
-For this last section, we’re going to send some money from the account we just created to my ENS-linked account, `coogan.eth`. All from the python interpreter! 
+For this last section, we’re going to send some money from the account we just created to another Ethereum account. All from the python interpreter! 
 
 A reasonable response to sending money is, “Isn’t this just internet funny money that’s always fluctuating with a downward trajectory?” And, yes, cryptocurrency USD prices are extremely volatile. This has caused hesitation from businesses -- why would you accept a currency with an uncertain price? 
 
@@ -150,7 +160,7 @@ We need to parse it using `json`:
 We also need to tell `web3.py` where to find this code on the Ethereum network. We do so with the following code:
 
 ```python
->>> address = w3.toChecksumAddress(‘0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8’)
+>>> address = ‘0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8’
 ```
 
 We then use the ABI and the address to instantiate a **smart contract object.** This will give us access to the functions exposed by the code:
@@ -158,3 +168,71 @@ We then use the ABI and the address to instantiate a **smart contract object.** 
 ```python
 >>> dai = w3.eth.contract(address=address, abi=abi)
 ```
+
+To test we've properly instantiated the contract, we'll call a function that tells us how much Dai is held by the contract:
+
+```python
+>>> dai.functions.totalSupply().call()
+10100000000000101001376883458034812485564519
+```
+
+(The balance may be different by the time you run this)
+
+#### Building the Transaction
+
+To transfer the Dai from our Spanish Inquisition account (`my_account`), we'll use the `transfer` function from the Dai smart contract, shown below:
+
+![ERC-20 Transfer Function](https://github.com/cooganb/web3py-tutorial/blob/master/transfer-function.png)
+
+We can see we need to pass in two parameters to the contract: `to`, which will be a hexadecimal Ethereum `address` and `value`, which is `uint256`. Dealing with unsigned integers of 256 bits (`uint256`) can be challenging for even seasoned developers. It's a testament to unusual programming that has to be done at the smart contract level and frequently trips me up. `Web3.py` has a method we can use to cast values from integer to the format required for this smart contract, `toHex`. Since the amount we're sending is below 16, we'll just put a `0x` on the front of it.
+
+So our transaction currently looks like this:
+
+```
+transaction = dai.functions.transfer(TO_ADDRESS, 0x10)
+```
+
+These parameters are good for the Dai contract (we won't get an error there), but we need more parameters for our transaction to run on the Ethereum network. Those values are `chainId`, `gas` and `nonce`.  
+
+* **ChainId** helps `web3.py` know to which network the transaction is being sent. Different networks have different quirks (as we saw when we installed the `middleware` at the beginning for Rinkeby) and this helps `web3.py` bundle the transaction correctly. Rinkeby's network ID is `4`, [here's a complete list of network IDs.](https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/). 
+
+* **Gas** is the small payment you make to miners on the network to run your transaction. Many people are surprised by this, but the amount is small (our transaction will cost  0.00007000 ETH, for example, [but is demarcated in a particular denomination called Gwei](https://ethereum-homestead.readthedocs.io/en/latest/ether.html)). `Gas` helps run the network in a decentralized and secure way.  
+
+* **Nonce** is a global variable particular to each Ethereum account. It serves the same purpose as the number on the bottom of the check: it allows for proper ordering of payments from different accounts. It increments up one after each transaction sent. `Web3.py` has a method for finding the current `nonce` of the address: `w3.eth.getTransactionCount(ETHEREUM_ADDRESS)`. 
+
+We'll use the `web3.py` method `.buildTransaction` to incorporate these three variables into our transaction. I'm also adding in my friend's Ethereum address and will send him `10` Dai:  
+
+```python
+>>> transaction = dai.functions.transfer('0xafC2F2bBD4173311BE60A7f5d4103b098D2703e8', 0x10).buildTransaction({'chainId': 4, 'gas':70000, 'nonce': w3.eth.getTransactionCount(my_account._address)})
+```
+
+#### Signing and Sending Transaction
+
+Now that we have our `transaction`, we need to sign it with our private key. This is how the peer-to-peer protocol of Ethereum will know that it is this account that wants to send the money. To sign, we put the `transaction` object and our `my_account._private_key` into the following function:
+
+```python
+>>> signed_txn = w3.eth.account.signTransaction(transaction, '0x265434629c3d2e652550d62225adcb2813d3ac32c6e07c8c39b5cc1efbca18b3')
+```
+
+_**Note: You should never post your real private key online! This is being done for educational purposes only. Doublt Note: Until this account is drained of test ether or test dai, the above command will be valid for the Rinkeby network**_
+
+With our signed transaction, all we need to do now is send it to the network through our Infura API endpoint. We do this through our `w3` object with the following command:
+
+```python
+>>> txn_hash = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+```
+
+If that goes through, congratulations! _You've just sent money using Python!_  
+
+To find your transaction, you can print `txn_hash` and take the string value to [Etherscan for Rinkeby.](https://rinkeby.etherscan.io/). Here's the hash I have (yours will be different!):
+
+```python
+>>> txn_hash
+HexBytes('0xc5f98cbe6f1eaef16916b148e6c4ae926b11ab9dde750e188362745da39d560e')
+```
+
+[You can see it on the Ethereum testnet here](https://rinkeby.etherscan.io/tx/0xc5f98cbe6f1eaef16916b148e6c4ae926b11ab9dde750e188362745da39d560e)
+
+***
+
+As you can see, using `web3.py` opens up all kinds of possibilities with your applications. In the next tutorial, I'm hoping to do something more built out with proper files and directories. For now, I just wanted to show you some of the incredible options blockchain can provide. I hope you found something interesting! The community is really eager to engage with new folks, be sure to reach out.
