@@ -108,7 +108,7 @@ _Note: In the next few steps, I’m going to break a few rules of cryptography a
 >>> my_account = w3.eth.account.create(‘Nobody expects the Spanish Inquisition!’)
 ```
 
-The above command uses the string input to generate the `my_account` object, which contains a private key (`my_account._private_key`) and its associated Ethereum address (`my_account._address`) . However, since this has been posted publicly, anyone can generate and use the same private key. (Luckily, I’m just using it for this tutorial and only on a test blockchain network.) 
+The above command uses the string input to generate the `my_account` object, which contains a private key (`my_account._private_key`) and its associated Ethereum address (`my_account._address`) . However, since this has been posted publicly, someone could generate and use the same private key. (Luckily, I’m just using it for this tutorial and only on a test blockchain network.) 
 
 For this reason, users typically delegate private key creation and management to software called clients (like [Geth](https://geth.ethereum.org/)) or wallets (like [MetaMask](https://metamask.io/)). These projects provide an incredibly secure way to generate and handle private keys for blockchain interactions. 
 
@@ -121,7 +121,7 @@ For example, I have an Ethererum account at `0x4d3dd8471a289E820Aa9E2Dc5f437C1b2
 
 ### Send Money
 
-For this last section, we’re going to send some money from the account we just created to my ENS-linked account, “coogan.eth”. All from the python interpreter! 
+For this last section, we’re going to send some money from the account we just created to my ENS-linked account, `coogan.eth`. All from the python interpreter! 
 
 A reasonable response to sending money is, “Isn’t this just internet funny money that’s always fluctuating with a downward trajectory?” And, yes, cryptocurrency USD prices are extremely volatile. This has caused hesitation from businesses -- why would you accept a currency with an uncertain price? 
 
