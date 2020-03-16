@@ -226,7 +226,8 @@ Now that we have our `transaction`, we need to sign it with our private key. Thi
 >>> signed_txn = w3.eth.account.signTransaction(transaction, my_account._private_key)
 ```
 
-_**Note: You should never post your real private key online! This is being done for educational purposes only. Doublt Note: Until this account is drained of test ether or test dai, the above command will be valid for the Rinkeby network**_
+_**Note: You should never post your real private key online! This is being done for educational purposes only. 
+Double Note: Until this account is drained of test ether or test dai, the above command will be valid for the Rinkeby network**_
 
 With our signed transaction, all we need to do now is send it to the network through our Infura API endpoint. We do this through our `w3` object with the following command:
 
@@ -236,7 +237,7 @@ With our signed transaction, all we need to do now is send it to the network thr
 
 If that goes through, congratulations! _You've just sent money using Python!_  
 
-To find your transaction, you can print `txn_hash` and take the string value to [Etherscan for Rinkeby.](https://rinkeby.etherscan.io/). Here's the hash I have (yours will be different!):
+To find your transaction, you can print `txn_hash` and take the string value to [Etherscan for Rinkeby.](https://rinkeby.etherscan.io/) Here's the hash I have (yours will be different!):
 
 ```python
 >>> txn_hash
@@ -249,4 +250,4 @@ HexBytes('0xc5f98cbe6f1eaef16916b148e6c4ae926b11ab9dde750e188362745da39d560e')
 
 As you can see, using `web3.py` opens up all kinds of possibilities with your applications. In the next tutorial, I'm hoping to do something more built out with proper files and directories. For now, I just wanted to show you some of the incredible options blockchain can provide. I hope you found something interesting! The community is really eager to engage with new folks, be sure to reach out.
 
-_Thank you to Daniel Ellison for his feedback and editing, sometimes copied verbatim!_
+_Thank you to Daniel Ellison for his feedback and comments, sometimes copied verbatim!_
