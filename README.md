@@ -215,7 +215,7 @@ These parameters are good for the Dai contract (we won't get an error there), bu
 We'll use the `web3.py` method `.buildTransaction` to incorporate these three variables into our transaction. I'm also adding in my friend's Ethereum address and will send him `10` Dai:  
 
 ```python
->>> transaction = dai.functions.transfer('0xafC2F2bBD4173311BE60A7f5d4103b098D2703e8', 0x10).buildTransaction({'chainId': 4, 'gas':70000, 'nonce': w3.eth.getTransactionCount(my_account._address)})
+>>> transaction = dai.functions.transfer('0xafC2F2bBD4173311BE60A7f5d4103b098D2703e8', 0x10).buildTransaction({'chainId': 4, 'gas':70000, 'nonce': w3.eth.getTransactionCount('0x5b580eB23Fca4f0936127335a92f722905286738')})
 ```
 
 #### Signing and Sending Transaction
@@ -223,7 +223,7 @@ We'll use the `web3.py` method `.buildTransaction` to incorporate these three va
 Now that we have our `transaction`, we need to sign it with our private key. This is how the peer-to-peer protocol of Ethereum will know that it is this account that wants to send the money. To sign, we put the `transaction` object and our `my_account._private_key` into the following function:
 
 ```python
->>> signed_txn = w3.eth.account.signTransaction(transaction, my_account._private_key)
+>>> signed_txn = w3.eth.account.signTransaction(transaction, '265434629C3D2E652550D62225ADCB2813D3AC32C6E07C8C39B5CC1EFBCA18B3')
 ```
 
 _**Note: You should never post your real private key online! This is being done for educational purposes only. 
