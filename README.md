@@ -82,7 +82,7 @@ To check that all our setup is correct, please run your python interpreter and t
 
 The above command imports some of the main methods from `web3.py` we’re going to use to connect to the blockchain as well as the ever-faithful, native `json` library.
 
-Next, we'll create an object, `w3`, which we initialize with our Infura API endpoint ( appended with https:// ). It will become the main way `web3.py` works with the blockchain throughout the rest of the tutorial.
+Next, we'll create an object, `w3`, which we initialize with our Infura API endpoint ( prepended with https:// ). It will become the main way `web3.py` works with the blockchain throughout the rest of the tutorial.
 
 ```python
 >>> w3 = Web3(Web3.HTTPProvider("https://rinkeby.infura.io/v3/8e4cd4b220fa42d3ac2acca966fd07fa"))
