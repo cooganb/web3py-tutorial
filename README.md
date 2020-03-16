@@ -28,12 +28,22 @@ Table of Contents
 We’re gonna use [pip](https://pip.pypa.io/en/stable/installing/) to install `web3.py` from our command line
 
 ```bash
-$ pip install web3
+$ pip3 install web3
 ```
 
-(If you’re using virtualenv, [here’s some documentation](https://web3py.readthedocs.io/en/stable/troubleshooting.html#setup-environment) about setting up a clean environment for Web3.py)
+For people with both Python 2 and 3 installed, you should check to see which version `pip` command invokes. Some default to 2.7:
 
-Great! We’re ready to get started
+```bash
+$ pip -V
+pip 10.0.1 from /Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip (python 2.7)
+
+$ pip3 -V
+pip 20.0.2 from /usr/local/lib/python3.7/site-packages/pip (python 3.7)
+```
+
+If you’re using virtualenv, [here’s some documentation](https://web3py.readthedocs.io/en/stable/troubleshooting.html#setup-environment) about setting up a clean environment for Web3.py
+
+Great! We’re on our way.
 
 ### Setting up our Connection
 
@@ -43,17 +53,17 @@ Since this is a basic tutorial, we’ll use a service. The most popular one is [
 
 ![Infura Project Dashboard](https://github.com/cooganb/web3py-tutorial/blob/master/infura-rinkeby.png)
 
-Copy the Endpoint and **be sure to append https:// to the address.**
+Copy the Endpoint and **be sure to prepend https:// to the address.**
 
 Once you have that, you’re ready to connect to the blockchain using Python!
 
 
 ### Initialization
 
-We’ll now kick up our Python interpreter. This can vary depending on your Python installation, but is usually accomplished with running whatever keyword you typically put before a python file. For me on my Mac iTerm, it’s:
+Let's fire up our Python interpreter. This can vary depending on your Python installation, but is usually accomplished with running whatever keyword you typically put before a python file. For me on my Mac iTerm with both Pyton 2 and 3 installed, it’s:
 
 ```shell
-$ python
+$ python3
 ```
 
 ```
@@ -72,13 +82,6 @@ To check that all our setup is correct, please run your python interpreter and t
 
 The above command imports some of the main methods from `web3.py` we’re going to use to connect to the blockchain as well as the ever-faithful, native `json` library.
 
-We also need to add in some middleware to help us work with Infura and the Rinkeby testnet:
-
-```python
->>> from web3.middleware import geth_poa_middleware
->>> w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-```
-
 Next, we'll create an object, `w3`, which we initialize with our Infura API endpoint ( appended with https:// ). It will become the main way `web3.py` works with the blockchain throughout the rest of the tutorial.
 
 ```python
@@ -86,6 +89,13 @@ Next, we'll create an object, `w3`, which we initialize with our Infura API endp
 ```
 
 _Note: You need to add **HTTPS://** in front of your Infura API address, otherwise you’ll get an error!_
+
+We also need to add in some middleware to help us work with Infura and the Rinkeby testnet:
+
+```python
+>>> from web3.middleware import geth_poa_middleware
+>>> w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+```
 
 Now, to see if all’s gone well, we run:
 
@@ -99,7 +109,7 @@ If you get `False`, a few things you can check:
 1. If you’ve had to restart the interpreter, you have to re-import the libraries and re-initialize the variables 
 2. Have you copied the Infura API key correctly? 
 3. Have you installed `web3.py` and installed and imported Web3 and HTTPProvider library? 
-4. Have you appended the API key with https:// ?
+4. Have you prepended the API key with https:// ?
 
 
 ### Create an Account
@@ -111,7 +121,7 @@ Generating an account to use on the Ethereum network is super easy with `web3.py
 _Note: In the next few steps, I’m going to break a few rules of cryptography and security. 1) I’m going to generate a private key with inadequate entropy (randomness) and 2) I’m going to post a private key online. I’m not going to use this key beyond this tutorial—it’s just for educational purposes. You should always use proper private key management, like [Geth](https://geth.ethereum.org/) or [MetaMask,](https://metamask.io/) and never share your private key publicly._
 
 ```python
->>> my_account = w3.eth.account.create(‘Nobody expects the Spanish Inquisition!’)
+>>> my_account = w3.eth.account.create('Nobody expects the Spanish Inquisition!')
 >>> my_account._address
 '0x5b580eB23Fca4f0936127335a92f722905286738'
 >>> my_account._private_key
@@ -124,9 +134,9 @@ For this reason, users typically delegate private key creation and management to
 
 ### ENS Accounts
 
-Ethereum address’ are long hexadecimal numbers. They’re nearly impossible to type or remember, so the Ethereum community created the [Ethereum Name System (ENS).](https://ens.domains/) It serves the same benefit of the Domain Name System, which replaces website server numbers ([216.58.194.46](http://216.58.194.46)) to human-readable names ([google.com](https://www.google.com)). Rather than a `.com` domain, most ENS names use a `.eth` domain.
+Ethereum addresses are long hexadecimal numbers. They’re nearly impossible to type or remember, so the Ethereum community created the [Ethereum Name System (ENS).](https://ens.domains/) It serves the same benefit of the Domain Name System, which replaces website server numbers ([216.58.194.46](http://216.58.194.46)) to human-readable names ([google.com](https://www.google.com)). Rather than a `.com` domain, most ENS names use a `.eth` domain.
 
-For example, I have an Ethererum account at `0x4d3dd8471a289E820Aa9E2Dc5f437C1b2E22F598` but I’ve used ENS to map the more readable name `coogan.eth` to the address. If you type those into apps or projects that support ENS (such as `web3.py`!), it will substitute in the Ethereum hexadecimal address. Unfortunately, we won't be able to use it for this tutorial (`.eth` domain names only work on mainnet) but maybe in the next tutorial.
+For example, I have an Ethererum account at `0x4d3dd8471a289E820Aa9E2Dc5f437C1b2E22F598` but I’ve used ENS to map the more readable name `coogan.eth` to the address. If you type those into apps or projects that support ENS ([such as `web3.py`!](https://web3py.readthedocs.io/en/stable/ens_overview.html)), it will substitute in the Ethereum hexadecimal address. Unfortunately, we won't be able to use it for this tutorial as `.eth` domain names only work on mainnet...but maybe in the next tutorial!
 
 
 ### Send Money
@@ -147,6 +157,8 @@ First, to interface with code that’s been uploaded by a developer to Ethereum,
 
 Here's the testnet Dai ABI we'll be using, please click and copy the entire code snippet:
 
+Note: this code is _really_ long, take special care to copy it fully!
+
 <pre>
 abi = '[{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"}]'
 </pre>
@@ -160,7 +172,7 @@ We need to parse it using `json`:
 We also need to tell `web3.py` where to find this code on the Ethereum network. We do so with the following code:
 
 ```python
->>> address = ‘0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8’
+>>> address = '0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8'
 ```
 
 We then use the ABI and the address to instantiate a **smart contract object.** This will give us access to the functions exposed by the code:
@@ -236,3 +248,5 @@ HexBytes('0xc5f98cbe6f1eaef16916b148e6c4ae926b11ab9dde750e188362745da39d560e')
 ***
 
 As you can see, using `web3.py` opens up all kinds of possibilities with your applications. In the next tutorial, I'm hoping to do something more built out with proper files and directories. For now, I just wanted to show you some of the incredible options blockchain can provide. I hope you found something interesting! The community is really eager to engage with new folks, be sure to reach out.
+
+_Thank you to Daniel Ellison for his feedback and editing, sometimes copied verbatim!_
