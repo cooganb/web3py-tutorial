@@ -41,7 +41,7 @@ $ pip3 -V
 pip 20.0.2 from /usr/local/lib/python3.7/site-packages/pip (python 3.7)
 ```
 
-If you’re using virtualenv, [here’s some documentation](https://web3py.readthedocs.io/en/stable/troubleshooting.html#setup-environment) about setting up a clean environment for Web3.py
+Also, if you’re using virtualenv, [here’s some documentation](https://web3py.readthedocs.io/en/stable/troubleshooting.html#setup-environment) about setting up a clean environment for Web3.py
 
 Great! We’re on our way.
 
