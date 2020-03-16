@@ -223,7 +223,7 @@ We'll use the `web3.py` method `.buildTransaction` to incorporate these three va
 Now that we have our `transaction`, we need to sign it with our private key. This is how the peer-to-peer protocol of Ethereum will know that it is this account that wants to send the money. To sign, we put the `transaction` object and our `my_account._private_key` into the following function:
 
 ```python
->>> signed_txn = w3.eth.account.signTransaction(transaction, '265434629C3D2E652550D62225ADCB2813D3AC32C6E07C8C39B5CC1EFBCA18B3')
+>>> signed_txn = w3.eth.account.signTransaction(transaction, '0x265434629c3d2e652550d62225adcb2813d3ac32c6e07c8c39b5cc1efbca18b3')
 ```
 
 _**Note: You should never post your real private key online! This is being done for educational purposes only. 
