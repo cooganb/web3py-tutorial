@@ -206,6 +206,12 @@ transaction = dai.functions.transfer(TO_ADDRESS, 0x10)
 
 These parameters are good for the Dai contract (we won't get an error there), but we need more parameters for our transaction to run on the Ethereum network. Those values are `chainId`, `gas` and `nonce`.  
 
+```
+.buildTransaction({'chainId': 4, 
+                   'gas':70000, 
+                   'nonce': w3.eth.getTransactionCount(my_account._address)})
+```
+
 * **ChainId** helps `web3.py` know to which network the transaction is being sent. Different networks have different quirks (as we saw when we installed the `middleware` at the beginning for Rinkeby) and this helps `web3.py` bundle the transaction correctly. Rinkeby's network ID is `4`, [here's a complete list of network IDs.](https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/). 
 
 * **Gas** is the small payment you make to miners on the network to run your transaction. Many people are surprised by this, but the amount is small (our transaction will cost  0.00007000 ETH, for example, [but is demarcated in a particular denomination called Gwei](https://ethereum-homestead.readthedocs.io/en/latest/ether.html)). `Gas` helps run the network in a decentralized and secure way.  
